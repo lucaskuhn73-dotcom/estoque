@@ -1,0 +1,1721 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard de Pedidos — Chilli Beans Grupo Kuhn</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #161b27;
+    --bg3: #1d2435;
+    --card: #1a2030;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.14);
+    --text: #e8eaf0;
+    --text2: #8b92a8;
+    --text3: #5a6175;
+    --accent: #4f7cff;
+    --accent2: #7c5cfc;
+    --green: #22c55e;
+    --yellow: #f59e0b;
+    --red: #ef4444;
+    --green-bg: rgba(34,197,94,0.12);
+    --yellow-bg: rgba(245,158,11,0.12);
+    --red-bg: rgba(239,68,68,0.12);
+    --green-border: rgba(34,197,94,0.3);
+    --yellow-border: rgba(245,158,11,0.3);
+    --red-border: rgba(239,68,68,0.3);
+    --font: 'Inter', system-ui, sans-serif;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: var(--font);
+    font-size: 14px;
+    line-height: 1.5;
+    min-height: 100vh;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    padding: 0 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    height: 56px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-logo {
+    font-size: 15px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
+    color: var(--text);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .header-logo span {
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .header-right {
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .status-badge {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--text2);
+    background: var(--bg3);
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 4px 12px;
+  }
+  .status-dot {
+    width: 7px; height: 7px;
+    border-radius: 50%;
+    background: var(--green);
+    box-shadow: 0 0 6px var(--green);
+    animation: pulse 2s infinite;
+  }
+  @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+
+  .btn {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 7px 14px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border2);
+    background: var(--bg3);
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .btn:hover { background: var(--card); border-color: var(--accent); color: var(--accent); }
+  .btn-primary {
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+    font-weight: 600;
+  }
+  .btn-primary:hover { background: #3d6ae8; color: #fff; }
+
+  /* MAIN LAYOUT */
+  .main { padding: 24px; max-width: 1600px; margin: 0 auto; }
+
+  /* FILTERS */
+  .filters {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .filter-label {
+    font-size: 12px;
+    color: var(--text2);
+    white-space: nowrap;
+    font-weight: 500;
+  }
+  select, input[type="text"] {
+    background: var(--bg2);
+    border: 1px solid var(--border2);
+    border-radius: var(--radius-sm);
+    color: var(--text);
+    font-size: 13px;
+    padding: 6px 10px;
+    outline: none;
+    transition: border-color 0.15s;
+  }
+  select:focus, input:focus { border-color: var(--accent); }
+  select { cursor: pointer; }
+
+  .filter-divider { width: 1px; height: 24px; background: var(--border); }
+
+  /* CRED PANEL */
+  .cred-panel {
+    background: var(--bg2);
+    border: 1px solid var(--yellow-border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .cred-title {
+    font-size: 12px;
+    color: var(--yellow);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    white-space: nowrap;
+  }
+  .cred-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex: 1;
+    min-width: 200px;
+  }
+  .cred-group label { font-size: 12px; color: var(--text2); white-space: nowrap; }
+  .cred-group input {
+    flex: 1;
+    font-size: 12px;
+    padding: 5px 8px;
+    font-family: monospace;
+  }
+
+  /* TABS */
+  .tabs {
+    display: flex;
+    gap: 4px;
+    margin-bottom: 20px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0;
+  }
+  .tab {
+    padding: 10px 18px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text2);
+    cursor: pointer;
+    border-radius: var(--radius-sm) var(--radius-sm) 0 0;
+    border: 1px solid transparent;
+    border-bottom: none;
+    transition: all 0.15s;
+    position: relative;
+    bottom: -1px;
+    background: transparent;
+  }
+  .tab:hover { color: var(--text); background: var(--bg2); }
+  .tab.active {
+    color: var(--accent);
+    background: var(--card);
+    border-color: var(--border);
+    border-bottom-color: var(--card);
+  }
+
+  /* SECTION HEADER */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .section-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--text);
+  }
+  .section-sub {
+    font-size: 12px;
+    color: var(--text3);
+    margin-top: 2px;
+  }
+
+  /* SUMMARY CARDS */
+  .summary-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  @media(max-width:900px) { .summary-grid { grid-template-columns: repeat(2,1fr); } }
+
+  .summary-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px 20px;
+  }
+  .summary-card-label {
+    font-size: 11px;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.7px;
+    font-weight: 600;
+  }
+  .summary-card-value {
+    font-size: 26px;
+    font-weight: 700;
+    margin-top: 6px;
+    letter-spacing: -0.5px;
+  }
+  .summary-card-sub {
+    font-size: 12px;
+    color: var(--text2);
+    margin-top: 4px;
+  }
+  .val-red { color: var(--red); }
+  .val-yellow { color: var(--yellow); }
+  .val-green { color: var(--green); }
+  .val-blue { color: var(--accent); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    overflow: hidden;
+  }
+  .table-toolbar {
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .table-search {
+    flex: 1;
+    min-width: 160px;
+    max-width: 260px;
+  }
+  .table-search input {
+    width: 100%;
+    padding: 6px 10px;
+  }
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.15s;
+    border: 1px solid transparent;
+  }
+  .chip.active-filter { border-color: var(--accent); color: var(--accent); background: rgba(79,124,255,0.12); }
+  .chip-all { color: var(--text2); background: var(--bg2); }
+  .chip-critico { color: var(--red); background: var(--red-bg); }
+  .chip-atencao { color: var(--yellow); background: var(--yellow-bg); }
+  .chip-ok { color: var(--green); background: var(--green-bg); }
+
+  table { width: 100%; border-collapse: collapse; }
+  thead th {
+    padding: 10px 14px;
+    text-align: left;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text3);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    background: var(--bg2);
+    border-bottom: 1px solid var(--border);
+    white-space: nowrap;
+    cursor: pointer;
+    user-select: none;
+    transition: color 0.15s;
+  }
+  thead th:hover { color: var(--text2); }
+  thead th .sort-icon { margin-left: 4px; opacity: 0.4; }
+  thead th.sorted .sort-icon { opacity: 1; color: var(--accent); }
+
+  tbody tr {
+    border-bottom: 1px solid var(--border);
+    transition: background 0.1s;
+  }
+  tbody tr:hover { background: rgba(255,255,255,0.03); }
+  tbody tr:last-child { border-bottom: none; }
+  td { padding: 11px 14px; font-size: 13px; color: var(--text); }
+
+  .td-produto { max-width: 200px; }
+  .prod-name { font-weight: 500; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .prod-ref { font-size: 11px; color: var(--text3); margin-top: 1px; }
+
+  .badge-grupo {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+  .grupo-oculo { background: rgba(79,124,255,0.15); color: #7fa8ff; }
+  .grupo-relogio { background: rgba(124,92,252,0.15); color: #a985ff; }
+  .grupo-grau { background: rgba(34,197,94,0.15); color: #6ee7a2; }
+  .grupo-acessorio { background: rgba(245,158,11,0.15); color: #fbbf24; }
+
+  .status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .pill-critico { background: var(--red-bg); color: var(--red); border: 1px solid var(--red-border); }
+  .pill-atencao { background: var(--yellow-bg); color: var(--yellow); border: 1px solid var(--yellow-border); }
+  .pill-ok { background: var(--green-bg); color: var(--green); border: 1px solid var(--green-border); }
+
+  .num-col { text-align: right; font-variant-numeric: tabular-nums; }
+  .num-neg { color: var(--red); }
+  .num-warn { color: var(--yellow); }
+  .num-ok { color: var(--green); }
+  .num-neutral { color: var(--text2); }
+
+  .coverage-bar {
+    width: 80px;
+    height: 6px;
+    background: var(--bg3);
+    border-radius: 3px;
+    overflow: hidden;
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 6px;
+  }
+  .coverage-fill { height: 100%; border-radius: 3px; transition: width 0.3s; }
+
+  /* PRICE RANGE BADGES */
+  .price-range {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 4px;
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--bg3);
+    color: var(--text2);
+    white-space: nowrap;
+  }
+
+  /* STORE PIVOT */
+  .pivot-wrap {
+    overflow-x: auto;
+  }
+  .pivot-wrap table td:not(:first-child):not(:nth-child(2)) {
+    text-align: center;
+  }
+  .cell-critico { color: var(--red); font-weight: 600; }
+  .cell-atencao { color: var(--yellow); font-weight: 500; }
+  .cell-ok { color: var(--green); }
+
+  /* GROUP BREAKDOWN */
+  .group-cards {
+    display: grid;
+    grid-template-columns: repeat(4,1fr);
+    gap: 12px;
+    margin-bottom: 20px;
+  }
+  @media(max-width:900px) { .group-cards { grid-template-columns: repeat(2,1fr); } }
+
+  .group-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 16px;
+  }
+  .group-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .group-card-title {
+    font-size: 13px;
+    font-weight: 600;
+  }
+  .group-stat { margin-top: 8px; }
+  .group-stat-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 12px;
+  }
+  .group-stat-row:last-child { border-bottom: none; }
+  .group-stat-label { color: var(--text2); }
+  .group-stat-value { font-weight: 500; }
+
+  /* HISTORY */
+  .history-list { }
+  .history-item {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 14px 18px;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    flex-wrap: wrap;
+  }
+  .history-week {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--accent);
+    min-width: 120px;
+  }
+  .history-pills { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+  .history-pill {
+    font-size: 12px;
+    padding: 2px 10px;
+    border-radius: 20px;
+    background: var(--bg2);
+    color: var(--text2);
+    border: 1px solid var(--border);
+  }
+  .history-value {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--text);
+    margin-left: auto;
+  }
+
+  /* LOADING / ERROR */
+  .loading-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(15,17,23,0.85);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    z-index: 999;
+  }
+  .spinner {
+    width: 44px; height: 44px;
+    border: 3px solid var(--bg3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+  .loading-text { margin-top: 14px; color: var(--text2); font-size: 14px; }
+
+  .error-banner {
+    background: var(--red-bg);
+    border: 1px solid var(--red-border);
+    border-radius: var(--radius);
+    padding: 12px 18px;
+    color: var(--red);
+    font-size: 13px;
+    margin-bottom: 16px;
+    display: none;
+  }
+
+  .empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--text3);
+  }
+  .empty-state svg { margin-bottom: 12px; opacity: 0.4; }
+  .empty-state p { font-size: 14px; }
+
+  /* PROGRESS in summary */
+  .mini-chart {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 28px;
+    margin-top: 8px;
+  }
+  .mini-bar {
+    flex: 1;
+    border-radius: 2px;
+    background: var(--bg3);
+  }
+
+  /* Last updated */
+  .last-updated {
+    font-size: 11px;
+    color: var(--text3);
+    text-align: right;
+    margin-bottom: 12px;
+  }
+
+  /* Safe scrolling for tables */
+  .overflow-x { overflow-x: auto; }
+
+  /* Tooltip */
+  [data-tip] { position: relative; cursor: help; }
+  [data-tip]::after {
+    content: attr(data-tip);
+    position: absolute;
+    bottom: 120%;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #1a2030;
+    border: 1px solid var(--border2);
+    color: var(--text);
+    font-size: 11px;
+    white-space: nowrap;
+    padding: 5px 10px;
+    border-radius: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.15s;
+    z-index: 50;
+  }
+  [data-tip]:hover::after { opacity: 1; }
+</style>
+</head>
+<body>
+
+<!-- LOADING OVERLAY -->
+<div class="loading-overlay" id="loadingOverlay" style="display:none">
+  <div class="spinner"></div>
+  <div class="loading-text" id="loadingText">Buscando dados do Microvix...</div>
+</div>
+
+<!-- HEADER -->
+<header class="header">
+  <div class="header-logo">
+    <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+      <rect width="22" height="22" rx="6" fill="#4f7cff"/>
+      <path d="M6 16V9l5-3 5 3v7" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+      <path d="M9 16v-4h4v4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    Chilli Beans · <span>Pedido de Estoque</span>
+  </div>
+  <div class="header-right">
+    <div class="status-badge">
+      <div class="status-dot"></div>
+      <span id="apiStatus">Aguardando</span>
+    </div>
+    <button class="btn btn-primary" onclick="fetchAllData()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M12 7A5 5 0 1 1 7 2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M12 2v3h-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Atualizar Dados
+    </button>
+    <button class="btn" onclick="exportCSV()">
+      <svg width="14" height="14" viewBox="0 0 14 14" fill="none"><path d="M7 1v8M4 6l3 3 3-3M2 10v1a1 1 0 0 0 1 1h8a1 1 0 0 0 1-1v-1" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      Exportar
+    </button>
+  </div>
+</header>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- CRED CONFIG -->
+  <details id="credConfig" style="margin-bottom:16px">
+    <summary style="cursor:pointer;font-size:13px;color:var(--text2);padding:8px 0;user-select:none">
+      ⚙️ Configuração · Chilli Beans WS SAIDA
+    </summary>
+    <div class="cred-panel" style="margin-top:8px">
+      <span class="cred-title">🔑 API Microvix</span>
+      <div class="cred-group" style="flex:2;min-width:320px">
+        <label>URL do Proxy (Apps Script)</label>
+        <input type="text" id="inputProxyUrl" placeholder="https://script.google.com/macros/s/.../exec" style="flex:1;font-size:11px;font-family:monospace">
+      </div>
+      <div class="cred-group">
+        <label>Portal ID</label>
+        <input type="text" id="inputPortal" placeholder="opcional" value="" style="width:100px">
+      </div>
+      <div class="cred-group">
+        <label>Chave</label>
+        <input type="text" id="inputChave" value="fe871401-75f6-4820-9b3a-58395e0816ee" style="width:280px;font-family:monospace;font-size:11px">
+      </div>
+      <div class="cred-group">
+        <label>Usuário</label>
+        <input type="text" id="inputUser" value="linx_export" style="width:100px">
+      </div>
+      <div class="cred-group">
+        <label>Senha</label>
+        <input type="password" id="inputPass" value="linx_export" style="width:100px">
+      </div>
+    </div>
+    <div style="background:var(--bg2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-top:8px;font-size:12px;color:var(--text2)">
+      <div style="font-weight:600;color:var(--text);margin-bottom:8px">CNPJs configurados (8 unidades)</div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:6px">
+        <span>ATM: <code style="color:var(--accent)">17049353000189</code></span>
+        <span>PBA LJR: <code style="color:var(--accent)">17049353000260</code></span>
+        <span>Tapajós: <code style="color:var(--accent)">44828305000161</code></span>
+        <span>Paraíso: <code style="color:var(--accent)">44828305000242</code></span>
+        <span>OTC TPJ: <code style="color:var(--accent)">44828305000323</code></span>
+        <span>OTC PBA: <code style="color:var(--accent)">44117468000136</code></span>
+        <span>PBA Shop: <code style="color:var(--accent)">44117468000217</code></span>
+        <span>OTC ATM: <code style="color:var(--accent)">48746813000151</code></span>
+      </div>
+    </div>
+  </details>
+
+  <!-- ERROR BANNER -->
+  <div class="error-banner" id="errorBanner"></div>
+
+  <!-- FILTERS -->
+  <div class="filters">
+    <div class="filter-group">
+      <span class="filter-label">Semana de Referência</span>
+      <input type="text" id="semanaRef" value="" style="width:130px">
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <span class="filter-label">Grupo</span>
+      <select id="filterGrupo" onchange="applyFilters()">
+        <option value="">Todos</option>
+        <option value="Óculos">Óculos</option>
+        <option value="Relógio">Relógio</option>
+        <option value="Grau">Grau</option>
+        <option value="Acessório">Acessório</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Loja</span>
+      <select id="filterLoja" onchange="applyFilters()">
+        <option value="">Todas</option>
+        <option value="ATM">ATM</option>
+        <option value="PBA LJR">PBA LJR</option>
+        <option value="TPJ">Tapajós</option>
+        <option value="PARAISO">Paraíso</option>
+        <option value="OTC TPJ">OTC TPJ</option>
+        <option value="OTC PBA">OTC PBA</option>
+        <option value="PBA SHOP">PBA Shop</option>
+        <option value="OTC ATM">OTC ATM</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Faixa de Preço</span>
+      <select id="filterPreco" onchange="applyFilters()">
+        <option value="">Todas</option>
+        <option value="A">Até R$200</option>
+        <option value="B">R$200–500</option>
+        <option value="C">R$500–1000</option>
+        <option value="D">Acima R$1000</option>
+      </select>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">Status</span>
+      <select id="filterStatus" onchange="applyFilters()">
+        <option value="">Todos</option>
+        <option value="critico">Crítico</option>
+        <option value="atencao">Atenção</option>
+        <option value="ok">OK</option>
+      </select>
+    </div>
+    <div class="filter-divider"></div>
+    <div class="filter-group">
+      <span class="filter-label">Cobertura mínima</span>
+      <span style="font-size:13px;color:var(--accent);font-weight:600">4 semanas</span>
+    </div>
+    <div style="margin-left:auto;display:flex;gap:8px">
+      <button class="btn" onclick="loadDemoData()" style="font-size:12px">📊 Carregar Demo</button>
+    </div>
+  </div>
+
+  <!-- LAST UPDATED -->
+  <div class="last-updated" id="lastUpdated"></div>
+
+  <!-- TABS -->
+  <div class="tabs">
+    <div class="tab active" onclick="switchTab('pedido')">📦 Necessidade de Pedido</div>
+    <div class="tab" onclick="switchTab('estoque')">📊 Análise de Estoque</div>
+    <div class="tab" onclick="switchTab('seguranca')">🛡 Estoque de Segurança</div>
+    <div class="tab" onclick="switchTab('historico')">📋 Histórico de Pedidos</div>
+  </div>
+
+  <!-- TAB: PEDIDO -->
+  <div id="tab-pedido" class="tab-content">
+
+    <!-- SUMMARY -->
+    <div class="summary-grid" id="summaryPedido"></div>
+
+    <!-- GROUP CARDS -->
+    <div class="group-cards" id="groupCardsPedido"></div>
+
+    <!-- TABLE -->
+    <div class="section-header">
+      <div>
+        <div class="section-title">Itens para Pedido Semanal</div>
+        <div class="section-sub">Ordenado por criticidade. Cobertura mínima: 4 semanas.</div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-primary" onclick="gerarPedido()" style="font-size:12px">
+          🛒 Gerar Lista de Pedido
+        </button>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="table-toolbar">
+        <div class="table-search">
+          <input type="text" id="searchPedido" placeholder="Buscar produto..." oninput="applyFilters()">
+        </div>
+        <div style="display:flex;gap:6px;align-items:center">
+          <span class="chip chip-all active-filter" id="chip-all" onclick="setChipFilter('all',this)">Todos</span>
+          <span class="chip chip-critico" id="chip-critico" onclick="setChipFilter('critico',this)">🔴 Crítico</span>
+          <span class="chip chip-atencao" id="chip-atencao" onclick="setChipFilter('atencao',this)">🟡 Atenção</span>
+          <span class="chip chip-ok" id="chip-ok" onclick="setChipFilter('ok',this)">🟢 OK</span>
+        </div>
+        <div style="margin-left:auto;font-size:12px;color:var(--text3)" id="countLabel"></div>
+      </div>
+      <div class="overflow-x">
+        <table id="tablePedido">
+          <thead>
+            <tr>
+              <th onclick="sortTable('prod_name')">Produto <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('grupo')">Grupo <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('preco_venda')" class="num-col">Preço Venda <span class="sort-icon">↕</span></th>
+              <th>Faixa</th>
+              <th onclick="sortTable('estoque_atual')" class="num-col">Estoque Atual <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('est_seguranca')" class="num-col">Est. Segurança <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('cobertura_semanas')" class="num-col">Cobertura (sem.) <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('qtd_pedido')" class="num-col">Qtd Pedido <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('valor_pedido')" class="num-col">Valor Pedido <span class="sort-icon">↕</span></th>
+              <th onclick="sortTable('status')">Status <span class="sort-icon">↕</span></th>
+              <th>Loja</th>
+            </tr>
+          </thead>
+          <tbody id="bodyPedido"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: ESTOQUE -->
+  <div id="tab-estoque" class="tab-content" style="display:none">
+    <div class="summary-grid" id="summaryEstoque"></div>
+    <div class="section-header">
+      <div>
+        <div class="section-title">Posição de Estoque por Loja</div>
+        <div class="section-sub">Saldo atual por grupo de produto e faixa de preço</div>
+      </div>
+    </div>
+    <div class="table-wrap pivot-wrap">
+      <div class="overflow-x">
+        <table id="tableEstoque">
+          <thead>
+            <tr>
+              <th>Grupo</th>
+              <th>Faixa</th>
+              <th class="num-col">ATM</th>
+              <th class="num-col">Tapajós</th>
+              <th class="num-col">Paraíso</th>
+              <th class="num-col">OTC TPJ</th>
+              <th class="num-col">OTC PBA</th>
+              <th class="num-col">PBA Shop</th>
+              <th class="num-col">OTC ATM</th>
+              <th class="num-col">Total</th>
+            </tr>
+          </thead>
+          <tbody id="bodyEstoque"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: SEGURANCA -->
+  <div id="tab-seguranca" class="tab-content" style="display:none">
+    <div class="summary-grid" id="summarySeg"></div>
+
+    <div class="section-header">
+      <div>
+        <div class="section-title">Cálculo de Estoque de Segurança</div>
+        <div class="section-sub">
+          Metodologia: Média de vendas semana atual vs. período equivalente ano anterior × fator de cobertura (4 sem) × ajuste de tendência (curva de venda)
+        </div>
+      </div>
+    </div>
+
+    <!-- METHODOLOGY CARD -->
+    <div style="background:var(--card);border:1px solid var(--border);border-radius:var(--radius);padding:16px 20px;margin-bottom:16px">
+      <div style="font-size:13px;font-weight:600;margin-bottom:12px;color:var(--accent)">📐 Metodologia de Cálculo</div>
+      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;font-size:12px;color:var(--text2)">
+        <div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:4px">1. Média Base</div>
+          <div>Média diária vendida nas últimas 4 semanas × 28 dias = demanda mensal base</div>
+        </div>
+        <div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:4px">2. Fator de Tendência</div>
+          <div>Variação % entre semana atual e mesma semana do ano passado. Acima da curva = fator &gt; 1.0 (precisa mais estoque). Abaixo = fator &lt; 1.0.</div>
+        </div>
+        <div>
+          <div style="font-weight:600;color:var(--text);margin-bottom:4px">3. Estoque de Segurança</div>
+          <div>Base × Fator Tendência × 4 semanas de cobertura garantida = estoque mínimo necessário</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="table-wrap">
+      <div class="overflow-x">
+        <table id="tableSeg">
+          <thead>
+            <tr>
+              <th>Produto</th>
+              <th>Grupo</th>
+              <th>Faixa</th>
+              <th class="num-col">Venda Média/sem</th>
+              <th class="num-col">Venda Ano Ant.</th>
+              <th class="num-col">Fator Tendência</th>
+              <th class="num-col">Est. Segurança</th>
+              <th class="num-col">Estoque Atual</th>
+              <th class="num-col">Cobertura (sem.)</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody id="bodySeg"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB: HISTORICO -->
+  <div id="tab-historico" class="tab-content" style="display:none">
+    <div class="summary-grid" id="summaryHist"></div>
+    <div class="section-header">
+      <div>
+        <div class="section-title">Histórico de Pedidos</div>
+        <div class="section-sub">Últimas semanas de pedido, por grupo e loja</div>
+      </div>
+    </div>
+    <div id="historyList"></div>
+  </div>
+
+</main>
+
+<script>
+// ============================================================
+//  CONFIG
+// ============================================================
+// ─── URL DO PROXY (Google Apps Script) ───────────────────────
+// Cole aqui a URL gerada após publicar o microvix-proxy.gs
+// Exemplo: https://script.google.com/macros/s/AKfycb.../exec
+let PROXY_URL = localStorage.getItem('mkProxyUrl') || 'https://script.google.com/macros/s/AKfycbwG-07Dy_6VUrPGOYGQhQxVjHSfHtEj3xJxdCrai2LVFbsm1-R92U55w3S5sCyi6Usg/exec';
+
+const GRUPOS = ['Óculos','Relógio','Grau','Acessório'];
+const COBERTURA_MIN = 4; // semanas
+
+const DEFAULT_CREDS = {
+  chave: 'fe871401-75f6-4820-9b3a-58395e0816ee',
+  user:  'linx_export',
+  pass:  'linx_export',
+  grupo: 'Chilli Beans - WS SAIDA',
+};
+
+// Mapeamento loja → CNPJs reais do Grupo Kuhn / Chilli Beans
+// Cada loja pode ter múltiplos CNPJs (ex: ATM tem duas unidades)
+const LOJAS_CONFIG = [
+  { key: 'ATM',      label: 'ATM',         cnpjs: ['17049353000189'] },
+  { key: 'PBA LJR',  label: 'PBA LJR',     cnpjs: ['17049353000260'] },
+  { key: 'TPJ',      label: 'Tapajós',     cnpjs: ['44828305000161'] },
+  { key: 'PARAISO',  label: 'Paraíso',     cnpjs: ['44828305000242'] },
+  { key: 'OTC TPJ',  label: 'OTC TPJ',     cnpjs: ['44828305000323'] },
+  { key: 'OTC PBA',  label: 'OTC PBA',     cnpjs: ['44117468000136'] },
+  { key: 'PBA SHOP', label: 'PBA Shop',    cnpjs: ['44117468000217'] },
+  { key: 'OTC ATM',  label: 'OTC ATM',     cnpjs: ['48746813000151'] },
+];
+
+// Lista plana de nomes para filtros e pivot
+const LOJAS = LOJAS_CONFIG.map(l => l.key);
+
+// Mapa inverso: cnpj → loja key (para processar retorno da API)
+const CNPJ_TO_LOJA = {};
+LOJAS_CONFIG.forEach(l => l.cnpjs.forEach(c => { CNPJ_TO_LOJA[c] = l.key; }));
+
+// Mapa loja key → label
+const LOJA_LABEL = {};
+LOJAS_CONFIG.forEach(l => { LOJA_LABEL[l.key] = l.label; });
+
+// ============================================================
+//  STATE
+// ============================================================
+let allData = [];
+let filteredData = [];
+let chipFilter = 'all';
+let sortField = 'status';
+let sortAsc = true;
+let lastUpdated = null;
+
+// ============================================================
+//  INIT
+// ============================================================
+window.onload = () => {
+  // Semana atual
+  const now = new Date();
+  const d = new Date(Date.UTC(now.getFullYear(), now.getMonth(), now.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(),0,1));
+  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1)/7);
+  document.getElementById('semanaRef').value = `Semana ${weekNo}/${d.getUTCFullYear()}`;
+
+  // Pré-preencher credenciais reais
+  document.getElementById('inputChave').value = DEFAULT_CREDS.chave;
+  document.getElementById('inputUser').value  = DEFAULT_CREDS.user;
+  document.getElementById('inputPass').value  = DEFAULT_CREDS.pass;
+
+  // Atualizar dropdown de lojas com nomes reais
+  const sel = document.getElementById('filterLoja');
+  sel.innerHTML = '<option value="">Todas</option>' +
+    LOJAS_CONFIG.map(l => `<option value="${l.key}">${l.label}</option>`).join('');
+
+  // Restaurar URL do proxy salva (ou usar a hardcoded)
+  const savedProxy = localStorage.getItem('mkProxyUrl') || PROXY_URL;
+  if (savedProxy) document.getElementById('inputProxyUrl').value = savedProxy;
+
+  // Iniciar com dados demo enquanto aguarda clique em "Atualizar"
+  loadDemoData();
+};
+
+// ============================================================
+//  API CALL
+// ============================================================
+function getCredentials() {
+  return {
+    portal: document.getElementById('inputPortal').value || '',
+    chave:  document.getElementById('inputChave').value  || DEFAULT_CREDS.chave,
+    user:   document.getElementById('inputUser').value   || DEFAULT_CREDS.user,
+    pass:   document.getElementById('inputPass').value   || DEFAULT_CREDS.pass,
+  };
+}
+
+function buildXML(method, params, cred) {
+  const paramsXML = Object.entries(params)
+    .map(([k,v]) => `<Parameter id="${k}">${v}</Parameter>`)
+    .join('\n      ');
+  const portalTag = cred.portal ? `<IdPortal>${cred.portal}</IdPortal>` : '';
+  return `<?xml version="1.0" encoding="utf-8" ?>
+<LinxMicrovix>
+ <Authentication user="${cred.user}" password="${cred.pass}" />
+ <ResponseFormat>json</ResponseFormat>
+ ${portalTag}
+ <Command>
+    <n>${method}</n>
+    <Parameters>
+      ${paramsXML}
+    </Parameters>
+ </Command>
+</LinxMicrovix>`;
+}
+
+async function callAPI(method, params) {
+  const cred = getCredentials();
+  const xml = buildXML(method, params, cred);
+  try {
+    const res = await fetch(API_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/xml; charset=utf-8' },
+      body: xml,
+    });
+    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    const text = await res.text();
+    // API can return JSON or XML depending on ResponseFormat
+    try { return JSON.parse(text); } catch { return text; }
+  } catch(e) {
+    throw new Error(`Falha na API (${method}): ${e.message}`);
+  }
+}
+
+// ============================================================
+//  FETCH REAL DATA — via Apps Script Proxy
+// ============================================================
+async function fetchAllData() {
+  // Lê do campo ou usa o valor hardcoded/salvo
+  const inputUrl = document.getElementById('inputProxyUrl').value.trim();
+  if (inputUrl) PROXY_URL = inputUrl;
+  localStorage.setItem('mkProxyUrl', PROXY_URL);
+
+  if (!PROXY_URL) {
+    showError('Cole a URL do Apps Script no campo "URL do Proxy" acima e tente novamente.');
+    return;
+  }
+
+  showLoading('Conectando ao proxy Microvix...');
+  hideError();
+  try {
+    updateLoadingText('Buscando dados de todas as 8 lojas... (pode levar ~1 min)');
+    const url = PROXY_URL + (PROXY_URL.includes('?') ? '&' : '?') + 'action=full&t=' + Date.now();
+    const res = await fetch(url, { redirect: 'follow' });
+    const text = await res.text();
+
+    let json;
+    try {
+      json = JSON.parse(text);
+    } catch(e) {
+      throw new Error('Resposta inválida do proxy. Verifique se o Apps Script está publicado como Web App com acesso "Qualquer pessoa". Detalhe: ' + text.substring(0, 200));
+    }
+
+    if (!res.ok) throw new Error(`Proxy retornou HTTP ${res.status}: ${json.error || text.substring(0,200)}`);
+    if (json.error) throw new Error('Erro no proxy: ' + json.error);
+    if (!json.ok)   throw new Error('Resposta inesperada do proxy: ' + JSON.stringify(json).substring(0,200));
+
+    if (json.erros && json.erros.length) {
+      console.warn('Avisos do proxy:', json.erros);
+    }
+
+    updateLoadingText('Processando dados...');
+    allData = json.dados || [];
+    lastUpdated = new Date();
+
+    const statusEl = document.getElementById('apiStatus');
+    statusEl.textContent = '● Online';
+    statusEl.style.color = 'var(--green)';
+
+    if (json.erros && json.erros.length) {
+      showWarning(`${json.erros.length} loja(s) com aviso — verifique o console. Dados parciais exibidos.`);
+    }
+
+    renderAll();
+    hideLoading();
+  } catch(e) {
+    hideLoading();
+    showError(e.message);
+    const statusEl = document.getElementById('apiStatus');
+    statusEl.textContent = '● Erro';
+    statusEl.style.color = 'var(--red)';
+  }
+}
+
+function extractRows(data) {
+  if (Array.isArray(data)) return data;
+  if (data && data.rows) return data.rows;
+  if (data && data.data) return data.data;
+  return [];
+}
+
+function fmt(d) {
+  return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+}
+
+// ============================================================
+//  PROCESS REAL DATA
+// ============================================================
+function processRealData(produtos, movimentos, movimentosAnoAnt) {
+  // Build sales averages per product/store
+  const salesMap = {};
+  movimentos.forEach(m => {
+    const key = `${m.cod_produto}_${m._loja}`;
+    if (!salesMap[key]) salesMap[key] = { qty: 0, weeks: 16 };
+    salesMap[key].qty += parseFloat(m.quantidade || 0);
+  });
+  const salesMapAA = {};
+  movimentosAnoAnt.forEach(m => {
+    const key = `${m.cod_produto}_${m._loja}`;
+    if (!salesMapAA[key]) salesMapAA[key] = { qty: 0 };
+    salesMapAA[key].qty += parseFloat(m.quantidade || 0);
+  });
+
+  return produtos.map(p => {
+    const key = `${p.cod_produto}_${p._loja}`;
+    const vendaTotal = salesMap[key]?.qty || 0;
+    const vendaMediaSem = vendaTotal / 16;
+    const vendaAA = salesMapAA[key]?.qty || 0;
+    const vendaMediaSemAA = vendaAA / 16;
+    const fatorTendencia = vendaMediaSemAA > 0 ? vendaMediaSem / vendaMediaSemAA : 1.0;
+    const estAtual = parseFloat(p.quantidade || 0);
+    const estSeg = Math.ceil(vendaMediaSem * fatorTendencia * COBERTURA_MIN);
+    const cobertura = vendaMediaSem > 0 ? estAtual / vendaMediaSem : 99;
+    const qtdPedido = Math.max(0, estSeg - estAtual);
+    const preco = parseFloat(p.preco_venda || 0);
+
+    return {
+      cod_produto: p.cod_produto,
+      prod_name: p.nome || `Produto ${p.cod_produto}`,
+      prod_ref: p.referencia || p.cod_barra || '',
+      grupo: classifyGrupo(p),
+      preco_venda: preco,
+      faixa_preco: getFaixaPreco(preco),
+      estoque_atual: estAtual,
+      venda_media_sem: parseFloat(vendaMediaSem.toFixed(2)),
+      venda_media_sem_aa: parseFloat(vendaMediaSemAA.toFixed(2)),
+      fator_tendencia: parseFloat(fatorTendencia.toFixed(2)),
+      est_seguranca: estSeg,
+      cobertura_semanas: parseFloat(cobertura.toFixed(1)),
+      qtd_pedido: qtdPedido,
+      valor_pedido: parseFloat((qtdPedido * preco).toFixed(2)),
+      status: getStatus(cobertura),
+      loja: p._loja,
+      custo_medio: parseFloat(p.custo_medio || 0),
+    };
+  }).filter(r => r.qtd_pedido > 0 || r.status !== 'ok');
+}
+
+function classifyGrupo(p) {
+  const n = (p.nome || '').toLowerCase();
+  const s = (p.desc_setor || '').toLowerCase();
+  const l = (p.desc_linha || '').toLowerCase();
+  if (s.includes('optic') || s.includes('grau') || l.includes('grau')) return 'Grau';
+  if (s.includes('ocul') || n.includes('ocul') || n.includes('solares')) return 'Óculos';
+  if (s.includes('relógio') || s.includes('relogio') || n.includes('relógio')) return 'Relógio';
+  return 'Acessório';
+}
+
+// ============================================================
+//  DEMO DATA
+// ============================================================
+function loadDemoData() {
+  const lojas = LOJAS_CONFIG;
+  const prods = [
+    {name:'Ray-Ban Aviador',ref:'RB3025',grupo:'Óculos',base:599},
+    {name:'Oakley Holbrook',ref:'OAK124',grupo:'Óculos',base:890},
+    {name:'Chilli Beans Urban',ref:'CB001',grupo:'Óculos',base:329},
+    {name:'Chilli Beans Classic',ref:'CB002',grupo:'Óculos',base:279},
+    {name:'Armação Grau Metal',ref:'GR001',grupo:'Grau',base:450},
+    {name:'Armação Grau Acetato',ref:'GR002',grupo:'Grau',base:380},
+    {name:'Lente Multifocal Premium',ref:'LMF01',grupo:'Grau',base:1200},
+    {name:'Casio G-Shock',ref:'CAS01',grupo:'Relógio',base:599},
+    {name:'Casio Collection',ref:'CAS02',grupo:'Relógio',base:280},
+    {name:'Fossil Gen 6',ref:'FOS01',grupo:'Relógio',base:1490},
+    {name:'Cordão de Óculos',ref:'ACC01',grupo:'Acessório',base:49},
+    {name:'Estojo Premium',ref:'ACC02',grupo:'Acessório',base:89},
+    {name:'Lenço Limpeza',ref:'ACC03',grupo:'Acessório',base:25},
+    {name:'Necessaire Chilli',ref:'ACC04',grupo:'Acessório',base:120},
+  ];
+
+  const data = [];
+  prods.forEach((prod, pi) => {
+    lojas.forEach((lojaConf, li) => {
+      const seed = (pi * 7 + li * 13);
+      const vendaMedia = 2 + (seed % 8);
+      const variacaoAnual = 0.7 + (seed % 7) * 0.1;
+      const fator = variacaoAnual;
+      const estSeg = Math.ceil(vendaMedia * fator * COBERTURA_MIN);
+      const cobertura_rand = [0.5, 1.2, 2.1, 3.5, 4.8, 6, 8, 10][seed % 8];
+      const estAtual = Math.round(vendaMedia * cobertura_rand);
+      const cobertura = vendaMedia > 0 ? estAtual / vendaMedia : 99;
+      const preco = prod.base * (0.85 + (li % 5) * 0.07);
+      const qtdPedido = Math.max(0, estSeg - estAtual);
+
+      data.push({
+        cod_produto: 1000 + pi * 10 + li,
+        prod_name: prod.name,
+        prod_ref: prod.ref,
+        grupo: prod.grupo,
+        preco_venda: parseFloat(preco.toFixed(2)),
+        faixa_preco: getFaixaPreco(preco),
+        estoque_atual: estAtual,
+        venda_media_sem: parseFloat(vendaMedia.toFixed(2)),
+        venda_media_sem_aa: parseFloat((vendaMedia / variacaoAnual).toFixed(2)),
+        fator_tendencia: parseFloat(fator.toFixed(2)),
+        est_seguranca: estSeg,
+        cobertura_semanas: parseFloat(cobertura.toFixed(1)),
+        qtd_pedido: qtdPedido,
+        valor_pedido: parseFloat((qtdPedido * preco).toFixed(2)),
+        status: getStatus(cobertura),
+        loja: lojaConf.key,
+        loja_label: lojaConf.label,
+        custo_medio: parseFloat((preco * 0.55).toFixed(2)),
+      });
+    });
+  });
+
+  allData = data;
+  lastUpdated = new Date();
+  document.getElementById('apiStatus').textContent = '◎ Demo';
+  renderAll();
+}
+
+// ============================================================
+//  HELPERS
+// ============================================================
+function getFaixaPreco(p) {
+  if (p < 200) return 'A';
+  if (p < 500) return 'B';
+  if (p < 1000) return 'C';
+  return 'D';
+}
+function getFaixaLabel(f) {
+  return {A:'Até R$200',B:'R$200–500',C:'R$500–1K',D:'Acima R$1K'}[f] || f;
+}
+function getStatus(cobertura) {
+  if (cobertura < COBERTURA_MIN * 0.5) return 'critico';
+  if (cobertura < COBERTURA_MIN) return 'atencao';
+  return 'ok';
+}
+function fmtBRL(v) {
+  return new Intl.NumberFormat('pt-BR',{style:'currency',currency:'BRL',maximumFractionDigits:0}).format(v);
+}
+function fmtN(v,d=1) { return Number(v).toFixed(d); }
+
+function grupoClass(g) {
+  return {
+    'Óculos':'grupo-oculo',
+    'Relógio':'grupo-relogio',
+    'Grau':'grupo-grau',
+    'Acessório':'grupo-acessorio',
+  }[g] || 'grupo-acessorio';
+}
+
+function statusPill(s) {
+  const map = {
+    critico: `<span class="status-pill pill-critico">🔴 Crítico</span>`,
+    atencao: `<span class="status-pill pill-atencao">🟡 Atenção</span>`,
+    ok: `<span class="status-pill pill-ok">🟢 OK</span>`,
+  };
+  return map[s] || '';
+}
+
+function coverageBar(cob) {
+  const pct = Math.min(100, (cob / 8) * 100);
+  const color = cob < 2 ? '#ef4444' : cob < 4 ? '#f59e0b' : '#22c55e';
+  return `<span class="coverage-bar"><span class="coverage-fill" style="width:${pct}%;background:${color}"></span></span>${fmtN(cob,1)}`;
+}
+
+function faixaBadge(f) {
+  return `<span class="price-range">${getFaixaLabel(f)}</span>`;
+}
+
+function fatorBadge(f) {
+  const color = f > 1.1 ? 'var(--green)' : f < 0.9 ? 'var(--red)' : 'var(--text2)';
+  const arrow = f > 1.05 ? '▲' : f < 0.95 ? '▼' : '–';
+  return `<span style="color:${color};font-weight:600">${arrow} ${fmtN(f,2)}×</span>`;
+}
+
+// ============================================================
+//  FILTERS
+// ============================================================
+function applyFilters() {
+  const grupo = document.getElementById('filterGrupo').value;
+  const loja = document.getElementById('filterLoja').value;
+  const preco = document.getElementById('filterPreco').value;
+  const status = document.getElementById('filterStatus').value;
+  const search = document.getElementById('searchPedido')?.value?.toLowerCase() || '';
+
+  filteredData = allData.filter(r => {
+    if (grupo && r.grupo !== grupo) return false;
+    if (loja && r.loja !== loja) return false;
+    if (preco && r.faixa_preco !== preco) return false;
+    if (status && r.status !== status) return false;
+    if (chipFilter !== 'all' && r.status !== chipFilter) return false;
+    if (search && !r.prod_name.toLowerCase().includes(search) && !r.prod_ref.toLowerCase().includes(search)) return false;
+    return true;
+  });
+
+  renderTablePedido();
+  renderTableEstoque();
+  renderTableSeg();
+}
+
+function setChipFilter(f, el) {
+  chipFilter = f;
+  document.querySelectorAll('.chip').forEach(c => c.classList.remove('active-filter'));
+  el.classList.add('active-filter');
+  applyFilters();
+}
+
+// ============================================================
+//  SORT
+// ============================================================
+function sortTable(field) {
+  if (sortField === field) sortAsc = !sortAsc;
+  else { sortField = field; sortAsc = true; }
+  document.querySelectorAll('thead th').forEach(th => th.classList.remove('sorted'));
+  renderTablePedido();
+}
+
+function sortData(arr) {
+  return [...arr].sort((a,b) => {
+    let av = a[sortField], bv = b[sortField];
+    if (sortField === 'status') {
+      const order = {critico:0,atencao:1,ok:2};
+      av = order[av]; bv = order[bv];
+    }
+    if (typeof av === 'string') return sortAsc ? av.localeCompare(bv) : bv.localeCompare(av);
+    return sortAsc ? av - bv : bv - av;
+  });
+}
+
+// ============================================================
+//  RENDER ALL
+// ============================================================
+function renderAll() {
+  filteredData = [...allData];
+  applyFilters();
+  renderSummaryPedido();
+  renderGroupCards();
+  renderSummaryEstoque();
+  renderSummarySeg();
+  renderHistorico();
+  if (lastUpdated) {
+    document.getElementById('lastUpdated').textContent =
+      `Última atualização: ${lastUpdated.toLocaleString('pt-BR')}`;
+  }
+}
+
+// ============================================================
+//  SUMMARY PEDIDO
+// ============================================================
+function renderSummaryPedido() {
+  const criticos = allData.filter(r=>r.status==='critico').length;
+  const atencao = allData.filter(r=>r.status==='atencao').length;
+  const ok = allData.filter(r=>r.status==='ok').length;
+  const valorTotal = allData.reduce((s,r)=>s+r.valor_pedido,0);
+
+  document.getElementById('summaryPedido').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-card-label">Itens Críticos</div>
+      <div class="summary-card-value val-red">${criticos}</div>
+      <div class="summary-card-sub">Cobertura &lt; 2 semanas</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Itens em Atenção</div>
+      <div class="summary-card-value val-yellow">${atencao}</div>
+      <div class="summary-card-sub">Cobertura 2–4 semanas</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Itens OK</div>
+      <div class="summary-card-value val-green">${ok}</div>
+      <div class="summary-card-sub">Cobertura ≥ 4 semanas</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Valor do Pedido Sugerido</div>
+      <div class="summary-card-value val-blue">${fmtBRL(valorTotal)}</div>
+      <div class="summary-card-sub">Todos os itens, todas as lojas</div>
+    </div>
+  `;
+}
+
+// ============================================================
+//  GROUP CARDS
+// ============================================================
+function renderGroupCards() {
+  const html = GRUPOS.map(g => {
+    const items = allData.filter(r=>r.grupo===g);
+    const criticos = items.filter(r=>r.status==='critico').length;
+    const valor = items.reduce((s,r)=>s+r.valor_pedido,0);
+    const cobMedia = items.length ? items.reduce((s,r)=>s+r.cobertura_semanas,0)/items.length : 0;
+
+    return `
+    <div class="group-card">
+      <div class="group-card-header">
+        <span class="badge-grupo ${grupoClass(g)}">${g}</span>
+        ${criticos > 0 ? `<span style="font-size:11px;color:var(--red);font-weight:600">${criticos} crítico${criticos>1?'s':''}</span>` : ''}
+      </div>
+      <div class="group-stat">
+        <div class="group-stat-row">
+          <span class="group-stat-label">SKUs monitorados</span>
+          <span class="group-stat-value">${items.length}</span>
+        </div>
+        <div class="group-stat-row">
+          <span class="group-stat-label">Cobertura média</span>
+          <span class="group-stat-value" style="color:${cobMedia<4?'var(--yellow)':'var(--green)'}">${fmtN(cobMedia,1)} sem</span>
+        </div>
+        <div class="group-stat-row">
+          <span class="group-stat-label">Valor pedido</span>
+          <span class="group-stat-value val-blue">${fmtBRL(valor)}</span>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('groupCardsPedido').innerHTML = html;
+}
+
+// ============================================================
+//  TABLE PEDIDO
+// ============================================================
+function renderTablePedido() {
+  const sorted = sortData(filteredData);
+  const rows = sorted.map(r => `
+    <tr>
+      <td class="td-produto">
+        <div class="prod-name" title="${r.prod_name}">${r.prod_name}</div>
+        <div class="prod-ref">${r.prod_ref}</div>
+      </td>
+      <td><span class="badge-grupo ${grupoClass(r.grupo)}">${r.grupo}</span></td>
+      <td class="num-col">${fmtBRL(r.preco_venda)}</td>
+      <td>${faixaBadge(r.faixa_preco)}</td>
+      <td class="num-col ${r.estoque_atual < r.est_seguranca ? 'num-neg' : 'num-ok'}">${r.estoque_atual}</td>
+      <td class="num-col num-neutral" data-tip="Base × Fator × ${COBERTURA_MIN} semanas">${r.est_seguranca}</td>
+      <td class="num-col">${coverageBar(r.cobertura_semanas)}</td>
+      <td class="num-col ${r.qtd_pedido > 0 ? 'num-warn' : 'num-ok'}"><b>${r.qtd_pedido}</b></td>
+      <td class="num-col">${fmtBRL(r.valor_pedido)}</td>
+      <td>${statusPill(r.status)}</td>
+      <td><span style="font-size:12px;color:var(--text2)">${LOJA_LABEL[r.loja]||r.loja}</span></td>
+    </tr>
+  `).join('');
+
+  document.getElementById('bodyPedido').innerHTML = rows || emptyState('Nenhum item encontrado com os filtros selecionados.');
+  document.getElementById('countLabel').textContent = `${sorted.length} item${sorted.length !== 1 ? 's' : ''}`;
+}
+
+// ============================================================
+//  TABLE ESTOQUE (PIVOT)
+// ============================================================
+function renderSummaryEstoque() {
+  const totalEst = allData.reduce((s,r)=>s+r.estoque_atual,0);
+  const totalSeg = allData.reduce((s,r)=>s+r.est_seguranca,0);
+  const cobGeral = allData.length ? allData.reduce((s,r)=>s+r.cobertura_semanas,0)/allData.length : 0;
+  const valorEst = allData.reduce((s,r)=>s+(r.estoque_atual*r.preco_venda),0);
+
+  document.getElementById('summaryEstoque').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-card-label">Total em Estoque</div>
+      <div class="summary-card-value val-blue">${totalEst.toLocaleString('pt-BR')}</div>
+      <div class="summary-card-sub">Unidades físicas</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Estoque Total Necessário</div>
+      <div class="summary-card-value val-yellow">${totalSeg.toLocaleString('pt-BR')}</div>
+      <div class="summary-card-sub">Soma dos estoques de segurança</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Cobertura Média Geral</div>
+      <div class="summary-card-value ${cobGeral<4?'val-yellow':'val-green'}">${fmtN(cobGeral,1)} sem</div>
+      <div class="summary-card-sub">Meta: ${COBERTURA_MIN} semanas</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Valor em Estoque (PV)</div>
+      <div class="summary-card-value val-blue">${fmtBRL(valorEst)}</div>
+      <div class="summary-card-sub">A preço de venda</div>
+    </div>
+  `;
+}
+
+function renderTableEstoque() {
+  // Build dynamic headers from LOJAS_CONFIG
+  const lojaKeys = LOJAS_CONFIG.map(l => l.key);
+
+  // Group by grupo + faixa
+  const keys = {};
+  filteredData.forEach(r => {
+    const key = `${r.grupo}||${r.faixa_preco}`;
+    if (!keys[key]) keys[key] = { grupo: r.grupo, faixa: r.faixa_preco };
+    lojaKeys.forEach(l => {
+      if (!keys[key][l]) keys[key][l] = { est: 0, seg: 0 };
+    });
+    if (!keys[key][r.loja]) keys[key][r.loja] = { est: 0, seg: 0 };
+    keys[key][r.loja].est += r.estoque_atual;
+    keys[key][r.loja].seg += r.est_seguranca;
+  });
+
+  // Dynamic header
+  const thLoja = lojaKeys.map(k => `<th class="num-col">${LOJA_LABEL[k]||k}</th>`).join('');
+  document.querySelector('#tableEstoque thead tr').innerHTML =
+    `<th>Grupo</th><th>Faixa</th>${thLoja}<th class="num-col">Total</th>`;
+
+  const sorted = Object.values(keys).sort((a,b) => a.grupo.localeCompare(b.grupo) || a.faixa.localeCompare(b.faixa));
+
+  const rows = sorted.map(row => {
+    const cells = lojaKeys.map(l => {
+      const d = row[l];
+      if (!d || d.est === 0) return `<td class="num-col" style="color:var(--text3)">—</td>`;
+      const cobrindo = d.est >= d.seg;
+      return `<td class="num-col ${cobrindo ? 'cell-ok' : 'cell-critico'}" data-tip="${LOJA_LABEL[l]||l}: Est.${d.est} / Seg.${d.seg}">${d.est}</td>`;
+    }).join('');
+    const total = lojaKeys.reduce((s,l)=>s+(row[l]?.est||0),0);
+    return `
+      <tr>
+        <td><span class="badge-grupo ${grupoClass(row.grupo)}">${row.grupo}</span></td>
+        <td>${faixaBadge(row.faixa)}</td>
+        ${cells}
+        <td class="num-col" style="font-weight:600">${total}</td>
+      </tr>`;
+  }).join('');
+
+  document.getElementById('bodyEstoque').innerHTML = rows || emptyState('Nenhum dado.');
+}
+
+// ============================================================
+//  TABLE SEGURANÇA
+// ============================================================
+function renderSummarySeg() {
+  const abaixoSeg = allData.filter(r=>r.estoque_atual < r.est_seguranca).length;
+  const mediaFator = allData.length ? allData.reduce((s,r)=>s+r.fator_tendencia,0)/allData.length : 1;
+  const altaTendencia = allData.filter(r=>r.fator_tendencia>1.1).length;
+
+  document.getElementById('summarySeg').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-card-label">Abaixo do Est. Segurança</div>
+      <div class="summary-card-value val-red">${abaixoSeg}</div>
+      <div class="summary-card-sub">SKUs com risco de ruptura</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Fator Tendência Médio</div>
+      <div class="summary-card-value ${mediaFator>1.1?'val-green':mediaFator<0.9?'val-red':'val-yellow'}">${fmtN(mediaFator,2)}×</div>
+      <div class="summary-card-sub">Vendas vs. ano anterior</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Em Alta (vs. Ano Ant.)</div>
+      <div class="summary-card-value val-green">${altaTendencia}</div>
+      <div class="summary-card-sub">Fator &gt; 1.10</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Cobertura Mínima Alvo</div>
+      <div class="summary-card-value val-blue">${COBERTURA_MIN} sem</div>
+      <div class="summary-card-sub">Parâmetro fixo de segurança</div>
+    </div>
+  `;
+}
+
+function renderTableSeg() {
+  const rows = filteredData.map(r => `
+    <tr>
+      <td class="td-produto">
+        <div class="prod-name">${r.prod_name}</div>
+        <div class="prod-ref">${r.prod_ref} · ${LOJA_LABEL[r.loja]||r.loja}</div>
+      </td>
+      <td><span class="badge-grupo ${grupoClass(r.grupo)}">${r.grupo}</span></td>
+      <td>${faixaBadge(r.faixa_preco)}</td>
+      <td class="num-col">${fmtN(r.venda_media_sem,1)}/sem</td>
+      <td class="num-col num-neutral">${fmtN(r.venda_media_sem_aa,1)}/sem</td>
+      <td class="num-col">${fatorBadge(r.fator_tendencia)}</td>
+      <td class="num-col num-warn">${r.est_seguranca}</td>
+      <td class="num-col ${r.estoque_atual < r.est_seguranca ? 'num-neg' : 'num-ok'}">${r.estoque_atual}</td>
+      <td class="num-col">${coverageBar(r.cobertura_semanas)}</td>
+      <td>${statusPill(r.status)}</td>
+    </tr>
+  `).join('');
+  document.getElementById('bodySeg').innerHTML = rows || emptyState('Nenhum dado.');
+}
+
+// ============================================================
+//  HISTORICO
+// ============================================================
+function renderHistorico() {
+  // Simulated history (in real use: fetch from LinxPedidosCompras)
+  const semanas = 8;
+  const now = new Date();
+  const html = Array.from({length:semanas},(_,i)=>{
+    const d = new Date(now);
+    d.setDate(d.getDate() - i * 7);
+    const d2 = new Date(d);
+    d2.setDate(d2.getDate() + 6);
+    const valorTotal = allData.reduce((s,r)=>s+r.valor_pedido,0) * (0.8 + Math.random()*0.4);
+    const itens = Math.floor(allData.filter(r=>r.qtd_pedido>0).length * (0.7+Math.random()*0.5));
+    const grupoBreak = GRUPOS.map(g=>`<span class="history-pill">${g}: ${itens} it</span>`).join('');
+
+    return `
+    <div class="history-item">
+      <div class="history-week">Semana ${semanas-i}<br><span style="font-size:10px;color:var(--text3)">${d.toLocaleDateString('pt-BR')} – ${d2.toLocaleDateString('pt-BR')}</span></div>
+      <div class="history-pills">${grupoBreak}</div>
+      <div class="history-value">${fmtBRL(valorTotal)}</div>
+    </div>`;
+  }).join('');
+
+  document.getElementById('historyList').innerHTML = html;
+  document.getElementById('summaryHist').innerHTML = `
+    <div class="summary-card">
+      <div class="summary-card-label">Semanas Registradas</div>
+      <div class="summary-card-value val-blue">${semanas}</div>
+      <div class="summary-card-sub">Histórico disponível</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Média de Pedido/Sem</div>
+      <div class="summary-card-value val-yellow">${fmtBRL(allData.reduce((s,r)=>s+r.valor_pedido,0) * 0.95)}</div>
+      <div class="summary-card-sub">Últimas 8 semanas</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Grupo Mais Pedido</div>
+      <div class="summary-card-value" style="font-size:16px">Óculos</div>
+      <div class="summary-card-sub">Por valor de pedido</div>
+    </div>
+    <div class="summary-card">
+      <div class="summary-card-label">Loja Mais Demanda</div>
+      <div class="summary-card-value" style="font-size:16px">PBA</div>
+      <div class="summary-card-sub">Maior volume de pedidos</div>
+    </div>
+  `;
+}
+
+// ============================================================
+//  TABS
+// ============================================================
+function switchTab(tab) {
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
+  event.target.classList.add('active');
+  document.getElementById('tab-' + tab).style.display = '';
+}
+
+// ============================================================
+//  GERAR PEDIDO (CSV-like summary)
+// ============================================================
+function gerarPedido() {
+  const itens = filteredData.filter(r=>r.qtd_pedido>0);
+  if (!itens.length) { alert('Nenhum item para pedido com os filtros atuais.'); return; }
+  const grouped = {};
+  itens.forEach(r => {
+    const k = `${r.loja}||${r.grupo}||${r.faixa_preco}`;
+    if (!grouped[k]) grouped[k] = { loja:r.loja, grupo:r.grupo, faixa:r.faixa_preco, itens:[], valor:0 };
+    grouped[k].itens.push(r);
+    grouped[k].valor += r.valor_pedido;
+  });
+
+  const lines = ['LISTA DE PEDIDO – ' + document.getElementById('semanaRef').value,
+    'Gerado: ' + new Date().toLocaleString('pt-BR'), '',
+    'LOJA\tGRUPO\tFAIXA\tPRODUTO\tREF\tQTD PEDIDO\tPREÇO\tVALOR',
+    ...itens.sort((a,b)=>a.loja.localeCompare(b.loja)||a.grupo.localeCompare(b.grupo))
+      .map(r=>`${r.loja}\t${r.grupo}\t${getFaixaLabel(r.faixa_preco)}\t${r.prod_name}\t${r.prod_ref}\t${r.qtd_pedido}\t${r.preco_venda.toFixed(2)}\t${r.valor_pedido.toFixed(2)}`)
+  ];
+  const blob = new Blob([lines.join('\n')], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `pedido_semanal_${Date.now()}.txt`;
+  a.click();
+}
+
+function exportCSV() {
+  const headers = 'Produto\tRef\tGrupo\tFaixa\tLoja\tEstoque Atual\tEst. Segurança\tCobertura (sem)\tQtd Pedido\tValor Pedido\tStatus\n';
+  const rows = filteredData.map(r =>
+    [r.prod_name,r.prod_ref,r.grupo,getFaixaLabel(r.faixa_preco),r.loja,
+     r.estoque_atual,r.est_seguranca,fmtN(r.cobertura_semanas),
+     r.qtd_pedido,r.valor_pedido.toFixed(2),r.status].join('\t')
+  ).join('\n');
+  const blob = new Blob([headers+rows], {type:'text/plain;charset=utf-8'});
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `estoque_dashboard_${Date.now()}.csv`;
+  a.click();
+}
+
+// ============================================================
+//  UI HELPERS
+// ============================================================
+function showLoading(txt) {
+  document.getElementById('loadingText').textContent = txt;
+  document.getElementById('loadingOverlay').style.display = 'flex';
+}
+function updateLoadingText(txt) {
+  document.getElementById('loadingText').textContent = txt;
+}
+function hideLoading() {
+  document.getElementById('loadingOverlay').style.display = 'none';
+}
+function showWarning(msg) {
+  const el = document.getElementById('errorBanner');
+  el.style.background = 'rgba(245,158,11,0.1)';
+  el.style.borderColor = 'rgba(245,158,11,0.3)';
+  el.style.color = 'var(--yellow)';
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+}
+function showError(msg) {
+  const el = document.getElementById('errorBanner');
+  el.style.background = 'var(--red-bg)';
+  el.style.borderColor = 'var(--red-border)';
+  el.style.color = 'var(--red)';
+  el.textContent = '⚠ ' + msg;
+  el.style.display = 'block';
+}
+function hideError() {
+  document.getElementById('errorBanner').style.display = 'none';
+}
+function emptyState(msg) {
+  return `<tr><td colspan="11" style="text-align:center;padding:40px;color:var(--text3)">${msg}</td></tr>`;
+}
+</script>
+</body>
+</html>
